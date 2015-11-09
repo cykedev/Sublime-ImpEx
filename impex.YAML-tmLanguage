@@ -1,0 +1,70 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+---
+name: ImpEx
+scopeName: text.impex
+fileTypes: [csv, impex]
+uuid: 8a4a804c-34ea-4db4-aa9c-63837d36a09e
+
+patterns:
+
+# IMPEX Constant
+- name: constant.character
+  match: (\$.*?)(?=[\=\[\(\]\)\:\;])
+
+- name: constant.numeric
+  match: (@.*?)(?=[\[\(\]])
+
+
+
+- begin: (INSERT_UPDATE|INSERT|UPDATE|REMOVE)\s+(\w+)(?=[\[\s\;])
+  beginCaptures:
+      '1': {name: keyword.control}
+      '2': {name: storage.type}
+  end: $
+  patterns:
+  - {include: $self}
+  - {match: ., name: string}
+
+
+- begin: (\[)
+  beginCaptures:
+      '1': {name: variable.parameter}
+  end: (\])
+  endCaptures:
+    '1': {name: variable.parameter}
+  patterns:
+  - {include: $self}
+  - {match: (unique)|(default), name: keyword.control}
+  - {match: ., name: variable.parameter}
+
+
+- begin: (\()
+  beginCaptures:
+      '1': {name: variable.parameter}
+  end: (\))
+  endCaptures:
+    '1': {name: variable.parameter}
+  patterns:
+  - {include: $self}
+  - {match: ., name: variable.parameter}
+
+- begin: (\$START_USERRIGHTS)
+  beginCaptures:
+      '1': {name: keyword.control}
+  end: (\$END_USERRIGHTS)
+  endCaptures:
+    '1': {name: keyword.control}
+  patterns:
+  - {match: \+, name: storage.type}
+  - {match: \-, name: keyword.control}
+  - {match: \., name: variable.parameter}
+
+
+- name: constant.language
+  match: (true)|(false)
+
+  # IMPEX Comment
+- name: comment.line.number-sign
+  match: \#.*$
+
+
